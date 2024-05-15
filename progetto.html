@@ -37,12 +37,6 @@
         <br>
         <label for="soldi_spesi">Soldi Spesi:</label>
         <input type="number" id="soldi_spesi" name="soldi_spesi" step="0.01" placeholder="Inserisci i soldi spesi">
-        <br>
-        <label for="anticipati_a">Anticipati a:</label>
-        <select id="anticipati_a" name="anticipati_a">
-            <option value="nessuno">Nessuno</option>
-            <!-- Opzioni saranno aggiunte tramite JavaScript -->
-        </select>
         <button type="submit">Crea Spesa</button>
     </form>
 
@@ -52,7 +46,6 @@
             <tr>
                 <th>Testa-di-cazzo</th>
                 <th>Soldi Spesi</th>
-                <th>Pezze al culo</th>
             </tr>
         </thead>
         <tbody>
@@ -71,10 +64,8 @@
             var riga = tbody.insertRow();
             var cellaNome = riga.insertCell();
             var cellaSoldiSpesi = riga.insertCell();
-            var cellaPezzeAlCulo = riga.insertCell();
             cellaNome.textContent = personaggio;
             cellaSoldiSpesi.textContent = "0€";
-            cellaPezzeAlCulo.textContent = "0€";
         }
 
         // Aggiungiamo le opzioni al menu a tendina dinamicamente quando il primo form viene inviato
@@ -110,7 +101,6 @@
             event.preventDefault(); // Previene il comportamento predefinito del form
             var personaggioSelect = document.getElementById("personaggio_select");
             var soldiSpesiInput = document.getElementById("soldi_spesi");
-            var anticipatiASelect = document.getElementById("anticipati_a");
             var tabella = document.getElementById("tabella");
             var tbody = tabella.getElementsByTagName("tbody")[0];
             
@@ -144,4 +134,5 @@
     </script>
 </body>
 </html>
+
 
