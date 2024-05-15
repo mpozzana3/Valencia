@@ -53,7 +53,6 @@
                 <th>Testa-di-cazzo</th>
                 <th>Soldi Spesi</th>
                 <th>Pezze al culo</th>
-                <!-- Colonne per "Deve a <nome-personaggio>" saranno aggiunte tramite JavaScript -->
             </tr>
         </thead>
         <tbody>
@@ -64,6 +63,19 @@
     <script>
         // Array per tenere traccia dei personaggi creati
         var personaggiCreati = [];
+
+        // Funzione per aggiungere una riga per un personaggio nella tabella
+        function aggiungiRigaTabella(personaggio) {
+            var tabella = document.getElementById("tabella");
+            var tbody = tabella.getElementsByTagName("tbody")[0];
+            var riga = tbody.insertRow();
+            var cellaNome = riga.insertCell();
+            var cellaSoldiSpesi = riga.insertCell();
+            var cellaPezzeAlCulo = riga.insertCell();
+            cellaNome.textContent = personaggio;
+            cellaSoldiSpesi.textContent = "0€";
+            cellaPezzeAlCulo.textContent = "0€";
+        }
 
         // Aggiungiamo le opzioni al menu a tendina dinamicamente quando il primo form viene inviato
         document.getElementById("form1").addEventListener("submit", function(event) {
@@ -93,97 +105,43 @@
             });
         });
 
-        // Funzione per aggiungere una riga per un personaggio nella tabella
-function aggiungiRigaTabella(personaggio) {
-    var tabella = document.getElementById("tabella");
-    var tbody = tabella.getElementsByTagName("tbody")[0];
-    var riga = tbody.insertRow();
-    var cellaNome = riga.insertCell();
-    var cellaSoldiSpesi = riga.insertCell();
-    var cellaPezzeAlCulo = riga.insertCell();
-    cellaNome.textContent = personaggio;
-    cellaSoldiSpesi.textContent = "0€";
-    cellaPezzeAlCulo.textContent = "0€";
-
-    // Aggiungi colonne per "debito-<nome-personaggio>"
-    personaggiCreati.forEach(function(altroPersonaggio) {
-        var cella = riga.insertCell();
-        cella.textContent = "0€";
-        cella.classList.add("debito-" + altroPersonaggio.replace(" ", "-")); // Aggiunge la classe per la formattazione CSS
-    });
-}
-
-// Aggiungiamo le opzioni al menu a tendina dinamicamente quando il primo form viene inviato
-document.getElementById("form1").addEventListener("submit", function(event) {
-    event.preventDefault(); // Previene il comportamento predefinito del form
-    var personaggioInput = document.getElementById("personaggio");
-    var personaggio = personaggioInput.value;
-    var personaggioSelect = document.getElementById("personaggio_select");
-    var option = document.createElement("option");
-    option.text = personaggio;
-    personaggioSelect.add(option);
-    personaggiCreati.push(personaggio); // Aggiungi il personaggio all'array
-    personaggioInput.value = ""; // Resetta il campo di input del personaggio
-
-    // Aggiungi una riga per il nuovo personaggio nella tabella
-    aggiungiRigaTabella(personaggio);
-
-    // Aggiungi le opzioni al menu a tendina "anticipati_a" nel secondo form
-    var anticipatiASelect = document.getElementById("anticipati_a");
-    anticipatiASelect.innerHTML = ""; // Resetta le opzioni precedenti
-    var nessunoOption = document.createElement("option");
-    nessunoOption.text = "Nessuno";
-    anticipatiASelect.add(nessunoOption);
-    personaggiCreati.forEach(function(personaggio) {
-        var option = document.createElement("option");
-        option.text = personaggio;
-        anticipatiASelect.add(option);
-    });
-});
-
-// Gestore di eventi per il secondo form
-document.getElementById("form2").addEventListener("submit", function(event) {
-    event.preventDefault(); // Previene il comportamento predefinito del form
-    var personaggioSelect = document.getElementById("personaggio_select");
-    var soldiSpesiInput = document.getElementById("soldi_spesi");
-    var anticipatiASelect = document.getElementById("anticipati_a");
-    var tabella = document.getElementById("tabella");
-    var tbody = tabella.getElementsByTagName("tbody")[0];
-    
-    // Trova la riga corrispondente al personaggio selezionato
-    var personaggio = personaggioSelect.value;
-    var righe = tbody.getElementsByTagName("tr");
-    var riga;
-    for (var i = 0; i < righe.length; i++) {
-        if (righe[i].cells[0].textContent === personaggio) {
-            riga = righe[i];
-            break;
-        }
-    }
-
-    // Aggiorna il campo soldi spesi nella riga della tabella
-    if (riga) {
-        var soldiSpesi = parseFloat(riga.cells[1].textContent.replace("€", ""));
-        var nuovaSpesa = parseFloat(soldiSpesiInput.value);
-        if (!isNaN(nuovaSpesa)) { // Controllo se la nuova spesa è un numero valido
-            var totaleSpeso = soldiSpesi + nuovaSpesa;
-            riga.cells[1].textContent = totaleSpeso.toFixed(2) + "€";
-            soldiSpesiInput.value = ""; // Resetta il campo di input dei soldi spesi
-            // Aggiorna la colonna "Deve a <nome-personaggio>" per il personaggio selezionato
-            var colonneDeveA = riga.cells.length - 3; // L'indice di "Deve a <nome-personaggio>" è l'ultimo meno 2 (considerando la colonna "Testa-di-cazzo" e "Soldi Spesi")
-            for (var j = 0; j < colonneDeveA; j++) {
-                var deveA = riga.cells[j + 3]; // Il primo indice della colonna "Deve a <nome-personaggio>" è 3
-                deveA.textContent = totaleSpeso.toFixed(2) + "€";
+        // Gestore di eventi per il secondo form
+        document.getElementById("form2").addEventListener("submit", function(event) {
+            event.preventDefault(); // Previene il comportamento predefinito del form
+            var personaggioSelect = document.getElementById("personaggio_select");
+            var soldiSpesiInput = document.getElementById("soldi_spesi");
+            var anticipatiASelect = document.getElementById("anticipati_a");
+            var tabella = document.getElementById("tabella");
+            var tbody = tabella.getElementsByTagName("tbody")[0];
+            
+            // Trova la riga corrispondente al personaggio selezionato
+            var personaggio = personaggioSelect.value;
+            var righe = tbody.getElementsByTagName("tr");
+            var riga;
+            for (var i = 0; i < righe.length; i++) {
+                if (righe[i].cells[0].textContent === personaggio) {
+                    riga = righe[i];
+                    break;
+                }
             }
-        }
-    }
-});
 
-// Aggiungere una riga per ogni personaggio creato nella tabella
-personaggiCreati.forEach(function(personaggio) {
-    aggiungiRigaTabella(personaggio);
-});
+            // Aggiorna il campo soldi spesi nella riga della tabella
+            if (riga) {
+                var soldiSpesi = parseFloat(riga.cells[1].textContent.replace("€", ""));
+                var nuovaSpesa = parseFloat(soldiSpesiInput.value);
+                if (!isNaN(nuovaSpesa)) { // Controllo se la nuova spesa è un numero valido
+                    var totaleSpeso = soldiSpesi + nuovaSpesa;
+                    riga.cells[1].textContent = totaleSpeso.toFixed(2) + "€";
+                    soldiSpesiInput.value = ""; // Resetta il campo di input dei soldi spesi
+                }
+            }
+        });
 
+        // Aggiungere una riga per ogni personaggio creato nella tabella
+        personaggiCreati.forEach(function(personaggio) {
+            aggiungiRigaTabella(personaggio);
+        });
     </script>
 </body>
 </html>
+
