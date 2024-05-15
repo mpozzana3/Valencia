@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form di Esempio</title>
+</head>
+<body>
+    <h1>Form di Esempio</h1>
+
+    <!-- Primo Form -->
+    <form id="form1">
+        <label for="personaggio">Personaggio:</label>
+        <input type="text" id="personaggio" name="personaggio" placeholder="Inserisci il personaggio">
+        <button type="submit">CREA</button>
+    </form>
+
+    <hr>
+
+    <!-- Secondo Form -->
+    <form id="form2">
+        <label for="personaggio_select">Seleziona Personaggio:</label>
+        <select id="personaggio_select" name="personaggio_select">
+            <!-- Opzioni saranno aggiunte tramite JavaScript -->
+        </select>
+        <br>
+        <label for="soldi_spesi">Soldi Spesi:</label>
+        <input type="number" id="soldi_spesi" name="soldi_spesi" step="0.01" placeholder="Inserisci i soldi spesi">
+        <br>
+        <label for="anticipati_a">Anticipati a:</label>
+        <select id="anticipati_a" name="anticipati_a">
+            <option value="nessuno">Nessuno</option>
+            <!-- Opzioni saranno aggiunte tramite JavaScript -->
+        </select>
+        <button type="submit">Crea Spesa</button>
+    </form>
+
+    <!-- Messaggi -->
+    <div id="messaggi"></div>
+
+    <script>
+        // Array per tenere traccia dei personaggi creati
+        var personaggiCreati = [];
+
+        // Funzione per aggiungere un nuovo messaggio per un personaggio
+        function aggiungiMessaggio(personaggio) {
+            var messaggiDiv = document.getElementById("messaggi");
+            var nuovoMessaggio = document.createElement("p");
+            nuovoMessaggio.textContent = personaggio + ", soldi spesi: 0€"; // Inizializza il totale a 0
+            messaggiDiv.appendChild(nuovoMessaggio);
+            var deveAMessaggio = document.createElement("span");
+            deveAMessaggio.textContent = "Deve a " + personaggio + ": 0€";
+            messaggiDiv.appendChild(deveAMessaggio);
+            messaggiDiv.appendChild(document.createElement("br"));
+        }
+
+        // Aggiungiamo le opzioni al menu a tendina dinamicamente quando il primo form viene inviato
+        document.getElementById("form1").addEventListener("submit", function(event) {
+            event.preventDefault(); // Previene il comportamento predefinito del form
+            var personaggioInput = document.getElementById("personaggio");
+            var personaggio = personaggioInput.value;
+            var personaggioSelect = document.getElementById("personaggio_select");
+            var option = document.createElement("option");
+            option.text = personaggio;
+            personaggioSelect.add(option);
+            personaggiCreati.push(personaggio); // Aggiungi il personaggio all'array
+            personaggioInput.value = ""; // Resetta il campo di input del personaggio
+
+            // Aggiungi il messaggio e "deve a <nome-personaggio>: 0€" per il nuovo personaggio
+            aggiungiMessaggio(personaggio);
+
+            // Aggiungi le opzioni al menu a tendina "anticipati_a" nel secondo form
+            var anticipatiASelect = document.getElementById("anticipati_a");
+            anticipatiASelect.innerHTML = ""; // Resetta le opzioni precedenti
+            var nessunoOption = document.createElement("option");
+            nessunoOption.text = "Nessuno";
+            anticipatiASelect.add(nessunoOption);
+            personaggiCreati.forEach(function(personaggio) {
+                var option = document.createElement("option");
+                option.text = personaggio;
+                anticipatiASelect.add(option);
+            });
+        });
+
+        // Gestore di eventi per il secondo form
+        document.getElementById("form2").addEventListener("submit", function(event) {
+            event.preventDefault(); // Previene il comportamento predefinito del form
+            var personaggioSelect = document.getElementById("personaggio_select");
+            var soldiSpesiInput = document.getElementById("soldi_spesi");
+            var anticipatiASelect = document.getElementById("anticipati_a");
+            var messaggiDiv = document.getElementById("messaggi");
+
+            // Trova il paragrafo corrispondente al personaggio selezionato
+            var personaggio = personaggioSelect.value;
+            var messaggi = messaggiDiv.getElementsByTagName("p");
+            var messaggio;
+            var deveAMessaggio;
+            for (var i = 0; i < messaggi.length; i++) {
+                if (messaggi[i].textContent.startsWith(personaggio)) {
+                    messaggio = messaggi[i];
+                    deveAMessaggio = messaggi[i + 1]; // Il messaggio "deve a <nome-personaggio>: 0€" segue immediatamente il messaggio del personaggio
+                    break;
+                }
+            }
+
+            // Aggiorna il campo soldi spesi nel messaggio
+            if (messaggio && deveAMessaggio) {
+                var soldiSpesi = parseFloat(messaggio.textContent.split(":")[1].trim().replace("€", ""));
+                var nuovaSpesa = parseFloat(soldiSpesiInput.value);
+                if (!isNaN(nuovaSpesa)) { // Controllo se la nuova spesa è un numero valido
+                    var totaleSpeso = soldiSpesi + nuovaSpesa;
+                    messaggio.textContent = personaggio + ", soldi spesi: " + totaleSpeso.toFixed(2) + "€";
+                    soldiSpesiInput.value = ""; // Resetta il campo di input dei soldi spesi
+                    deveAMessaggio.textContent = "Deve a " + personaggio + ": " + totaleSpeso.toFixed(2) + "€";
+                }
+            }
+        });
+
+        // Aggiungere "deve a <nome-personaggio>: 0€" per tutti i personaggi creati
+        var messaggiDiv = document.getElementById("messaggi");
+        personaggiCreati.forEach(function(personaggio) {
+            aggiungiMessaggio(personaggio);
+        });
+    </script>
+</body>
+</html>
